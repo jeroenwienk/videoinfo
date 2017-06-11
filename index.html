@@ -10,8 +10,37 @@
 <form>
   <div>
     <label for="file-input">Select a video</label><br/>
-    <input id="file-input" type="file" accept="video/*" />
+    <input id="file-input" type="file" accept="video/*"/>
   </div>
+  <button type="submit">GET INFO</button>
 </form>
+
+<h1 id="duration-result"></h1>
+
+<script>
+  const electron = require('electron');
+  const { ipcRenderer } = electron;
+
+  document.querySelector('form').addEventListener('submit', (event) => {
+    event.preventDefault();
+    console.log('Form Submitted');
+
+    const file = document.querySelector('input').files[0];
+
+    if (file != null) {
+      const { path } = file;
+      ipcRenderer.send('fileSubmit', path);
+    }
+  });
+
+  ipcRenderer.on('fileMetadata', (event, value) => {
+    console.log(value);
+    const element = document.querySelector('#duration-result');
+    element.innerHTML = `Video is ${value} seconds`;
+  });
+
+
+</script>
+
 </body>
 </html>
